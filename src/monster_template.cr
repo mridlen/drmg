@@ -61,12 +61,28 @@ struct FlagEntry
   end
 end
 
+# ---------- Render style entry ----------
+# Used in MonsterTemplate.render_styles for weighted random render style selection.
+
+struct RenderStyleEntry
+  getter style : String                           # "Normal", "Translucent", "Fuzzy", "Shadow", "Stencil"
+  getter weight : Float64                         # relative weight; higher = more likely
+  getter alpha_range : Range(Float64, Float64)?   # Translucent and Stencil only
+  getter stencil_colors : Array(String)?          # Stencil only; hex strings e.g. "FF0000"
+
+  def initialize(@style, @weight, @alpha_range = nil, @stencil_colors = nil)
+  end
+end
+
 # ---------- Monster template ----------
 
 struct MonsterTemplate
+  # Core identity
   getter id : String
   getter actor_name : String
   getter base_health : Int32
+
+  # Required randomizable ranges
   getter health_range : Range(Int32, Int32)
   getter speed_range : Range(Int32, Int32)
   getter pain_chance_range : Range(Int32, Int32)
@@ -76,11 +92,39 @@ struct MonsterTemplate
   getter fixed_fields : FixedFields
   getter extra_flags : Array(FlagEntry)
 
+  # Optional behavioral ranges (nil = inherit from base actor)
+  getter mass_range : Range(Int32, Int32)?
+  getter gravity_range : Range(Float64, Float64)?
+  getter reaction_time_range : Range(Int32, Int32)?
+  getter pain_threshold_range : Range(Int32, Int32)?
+  getter threshold_range : Range(Int32, Int32)?
+  getter min_missile_chance_range : Range(Int32, Int32)?
+  getter max_target_dist_range : Range(Float64, Float64)?
+  getter melee_dist_range : Range(Float64, Float64)?
+  getter damage_multiply_range : Range(Float64, Float64)?
+
+  # Optional scale range (valid: 0.5..2.0); Radius/Height are derived from fixed_fields base values
+  getter scale_range : Range(Float64, Float64)?
+
+  # Optional render style pool; one entry selected per variant by weighted random
+  getter render_styles : Array(RenderStyleEntry)?
+
   def initialize(
     @id, @actor_name, @base_health,
     @health_range, @speed_range, @pain_chance_range,
     @attack, @drop_table, @translations, @fixed_fields,
-    @extra_flags
+    @extra_flags,
+    @mass_range = nil,
+    @gravity_range = nil,
+    @reaction_time_range = nil,
+    @pain_threshold_range = nil,
+    @threshold_range = nil,
+    @min_missile_chance_range = nil,
+    @max_target_dist_range = nil,
+    @melee_dist_range = nil,
+    @damage_multiply_range = nil,
+    @scale_range = nil,
+    @render_styles = nil
   )
   end
 end
@@ -105,6 +149,7 @@ struct ResolvedDropItem
 end
 
 struct MonsterVariant
+  # Core rolled stats
   getter name : String
   getter health : Int32
   getter speed : Int32
@@ -115,10 +160,48 @@ struct MonsterVariant
   getter template : MonsterTemplate
   getter flags : Array(String)
 
+  # Optional rolled behavioral properties (nil = omit from DECORATE output)
+  getter mass : Int32?
+  getter gravity : Float64?
+  getter reaction_time : Int32?
+  getter pain_threshold : Int32?
+  getter threshold : Int32?
+  getter min_missile_chance : Int32?
+  getter max_target_range : Float64?
+  getter melee_range : Float64?
+  getter damage_multiply : Float64?
+
+  # Optional scale (0.5-2.0); radius/height are proportionally derived from template base values
+  getter scale : Float64?
+  getter radius : Int32?
+  getter height : Int32?
+
+  # Optional render properties
+  getter render_style : String?   # nil when Normal or not rolled
+  getter alpha : Float64?         # Translucent or Stencil only
+  getter stencil_color : String?  # Stencil only; hex e.g. "FF0000"
+  getter blood_color : String?    # "RR GG BB" decimal; nil = inherit default
+
   def initialize(
     @name, @health, @speed, @pain_chance,
     @attack, @drop_items, @translation, @template,
-    @flags
+    @flags,
+    @mass = nil,
+    @gravity = nil,
+    @reaction_time = nil,
+    @pain_threshold = nil,
+    @threshold = nil,
+    @min_missile_chance = nil,
+    @max_target_range = nil,
+    @melee_range = nil,
+    @damage_multiply = nil,
+    @scale = nil,
+    @radius = nil,
+    @height = nil,
+    @render_style = nil,
+    @alpha = nil,
+    @stencil_color = nil,
+    @blood_color = nil
   )
   end
 end
