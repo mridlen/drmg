@@ -1,0 +1,13 @@
+name: drmg
+version: 0.1.0
+
+authors:
+  - Mark Ridlen <mark@ridlen.net>
+
+targets:
+  drmg:
+    main: src/drmg.cr
+
+crystal: '>= 1.19.1'
+
+license: MIT
