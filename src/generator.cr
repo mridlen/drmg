@@ -8,18 +8,17 @@ module Generator
 
     count.times do |i|
       # ---------- Roll stats within template ranges ----------
-      health = rng.rand(template.health_range)
-      speed = rng.rand(template.speed_range)
+      health      = rng.rand(template.health_range)
+      speed       = rng.rand(template.speed_range)
       pain_chance = rng.rand(template.pain_chance_range)
 
       # ---------- Roll attack parameters ----------
       bullet_count = rng.rand(template.attack.bullet_count_range)
-      damage = rng.rand(template.attack.damage_range)
+      damage       = rng.rand(template.attack.damage_range)
 
       spread_min = template.attack.spread_range.begin
       spread_max = template.attack.spread_range.end
-      spread = spread_min + rng.rand * (spread_max - spread_min)
-      spread = spread.round(2)
+      spread     = (spread_min + rng.rand * (spread_max - spread_min)).round(2)
 
       # ---------- Select translation ----------
       translation = template.translations.sample(rng)
@@ -49,19 +48,48 @@ module Generator
         rolled_flags << entry.flag if rng.rand < entry.chance
       end
 
+      # ---------- Roll behavioral properties ----------
+      mass               = template.mass_range.try { |r| rng.rand(r) }
+      gravity            = template.gravity_range.try { |r| (r.begin + rng.rand * (r.end - r.begin)).round(2) }
+      reaction_time      = template.reaction_time_range.try { |r| rng.rand(r) }
+      pain_threshold     = template.pain_threshold_range.try { |r| rng.rand(r) }
+      threshold          = template.threshold_range.try { |r| rng.rand(r) }
+      min_missile_chance = template.min_missile_chance_range.try { |r| rng.rand(r) }
+      max_target_range   = template.max_target_dist_range.try { |r| (r.begin + rng.rand * (r.end - r.begin)).round(1) }
+      melee_range        = template.melee_dist_range.try { |r| (r.begin + rng.rand * (r.end - r.begin)).round(1) }
+      damage_multiply    = template.damage_multiply_range.try { |r| (r.begin + rng.rand * (r.end - r.begin)).round(2) }
+
+      # ---------- Roll scale (valid range 0.5-2.0) ----------
+      # Radius and Height are derived proportionally from fixed_fields base values
+      scale         = template.scale_range.try { |r| (r.begin + rng.rand * (r.end - r.begin)).round(2) }
+      rolled_radius = scale.try { |s| (template.fixed_fields.radius * s).round.to_i }
+      rolled_height = scale.try { |s| (template.fixed_fields.height * s).round.to_i }
+
       # ---------- Build variant name ----------
       name = "#{template.actor_name}_#{i + 1}"
 
       variants << MonsterVariant.new(
-        name: name,
-        health: health,
-        speed: speed,
-        pain_chance: pain_chance,
-        attack: ResolvedAttack.new(bullet_count, damage, spread),
-        drop_items: drop_items,
-        translation: translation,
-        template: template,
-        flags: rolled_flags
+        name:               name,
+        health:             health,
+        speed:              speed,
+        pain_chance:        pain_chance,
+        attack:             ResolvedAttack.new(bullet_count, damage, spread),
+        drop_items:         drop_items,
+        translation:        translation,
+        template:           template,
+        flags:              rolled_flags,
+        mass:               mass,
+        gravity:            gravity,
+        reaction_time:      reaction_time,
+        pain_threshold:     pain_threshold,
+        threshold:          threshold,
+        min_missile_chance: min_missile_chance,
+        max_target_range:   max_target_range,
+        melee_range:        melee_range,
+        damage_multiply:    damage_multiply,
+        scale:              scale,
+        radius:             rolled_radius,
+        height:             rolled_height
       )
     end
 

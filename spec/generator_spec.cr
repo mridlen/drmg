@@ -227,4 +227,75 @@ describe Generator do
     v2 = Generator.generate(test_template, count: 5, rng: rng2)
     v1.map(&.flags).should eq v2.map(&.flags)
   end
+
+  it "rolls mass within mass_range when set" do
+    fixed = FixedFields.new(
+      radius: 20, height: 56, flags: [] of String,
+      see_sound: "", attack_sound: "", pain_sound: "", death_sound: "", active_sound: "",
+      sprite_prefix: ""
+    )
+    attack = AttackParams.new((1..1), (5..5), (11.25..11.25))
+    drop_table = DropTable.new(
+      low: [] of DropEntry, mid: [] of DropEntry, high: [] of DropEntry
+    )
+    template = MonsterTemplate.new(
+      id: "test", actor_name: "Test", base_health: 20,
+      health_range: (20..20), speed_range: (8..8), pain_chance_range: (200..200),
+      attack: attack, drop_table: drop_table,
+      translations: ["176:191=112:127"], fixed_fields: fixed,
+      extra_flags: [] of FlagEntry,
+      mass_range: (50..200)
+    )
+    rng = Random.new(1)
+    variants = Generator.generate(template, count: 10, rng: rng)
+    variants.each do |v|
+      m = v.mass.not_nil!
+      m.should be >= 50
+      m.should be <= 200
+    end
+  end
+
+  it "leaves mass nil when mass_range is not set" do
+    rng = Random.new(1)
+    variants = Generator.generate(test_template, count: 5, rng: rng)
+    variants.each do |v|
+      v.mass.should be_nil
+    end
+  end
+
+  it "derives radius and height proportionally from scale" do
+    fixed = FixedFields.new(
+      radius: 20, height: 56, flags: [] of String,
+      see_sound: "", attack_sound: "", pain_sound: "", death_sound: "", active_sound: "",
+      sprite_prefix: ""
+    )
+    attack = AttackParams.new((1..1), (5..5), (11.25..11.25))
+    drop_table = DropTable.new(
+      low: [] of DropEntry, mid: [] of DropEntry, high: [] of DropEntry
+    )
+    template = MonsterTemplate.new(
+      id: "test", actor_name: "Test", base_health: 20,
+      health_range: (20..20), speed_range: (8..8), pain_chance_range: (200..200),
+      attack: attack, drop_table: drop_table,
+      translations: ["176:191=112:127"], fixed_fields: fixed,
+      extra_flags: [] of FlagEntry,
+      scale_range: (2.0..2.0)
+    )
+    rng = Random.new(1)
+    variants = Generator.generate(template, count: 1, rng: rng)
+    v = variants[0]
+    v.scale.should eq 2.0
+    v.radius.should eq 40   # 20 * 2.0
+    v.height.should eq 112  # 56 * 2.0
+  end
+
+  it "leaves scale, radius, height nil when scale_range is not set" do
+    rng = Random.new(1)
+    variants = Generator.generate(test_template, count: 3, rng: rng)
+    variants.each do |v|
+      v.scale.should be_nil
+      v.radius.should be_nil
+      v.height.should be_nil
+    end
+  end
 end
