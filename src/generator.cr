@@ -27,6 +27,27 @@ module Generator
       # ---------- Resolve drop tier based on health vs base ----------
       drop_items = resolve_drops(template, health)
 
+      # ---------- Roll optional flags ----------
+      rolled_flags = [] of String
+
+      # Roll each global flag independently
+      OPTIONAL_FLAGS.each do |entry|
+        rolled_flags << entry.flag if rng.rand < entry.chance
+      end
+
+      # Roll speed pair (mutually exclusive: fast, slow, or neither)
+      speed_roll = rng.rand
+      if speed_roll < SPEED_FLAGS[:fast].chance
+        rolled_flags << SPEED_FLAGS[:fast].flag
+      elsif speed_roll < SPEED_FLAGS[:fast].chance + SPEED_FLAGS[:slow].chance
+        rolled_flags << SPEED_FLAGS[:slow].flag
+      end
+
+      # Roll per-monster extra flags
+      template.extra_flags.each do |entry|
+        rolled_flags << entry.flag if rng.rand < entry.chance
+      end
+
       # ---------- Build variant name ----------
       name = "#{template.actor_name}_#{i + 1}"
 
@@ -39,7 +60,7 @@ module Generator
         drop_items: drop_items,
         translation: translation,
         template: template,
-        flags: [] of String
+        flags: rolled_flags
       )
     end
 
