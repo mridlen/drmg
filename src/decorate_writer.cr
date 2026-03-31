@@ -21,6 +21,13 @@ module DecorateWriter
     io << "  Health #{v.health}\n"
     io << "  Speed #{v.speed}\n"
     io << "  PainChance #{v.pain_chance}\n"
+
+    # --- Optional flags ---
+    v.flags.each do |flag|
+      io << "  #{flag}\n"
+    end
+
+    # --- Translation ---
     io << "  Translation \"#{v.translation}\"\n"
 
     # --- Drop items ---

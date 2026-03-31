@@ -2,7 +2,7 @@ require "./spec_helper"
 require "../src/monster_template"
 require "../src/decorate_writer"
 
-def test_variant
+def test_variant(flags : Array(String) = [] of String)
   fixed = FixedFields.new(
     radius: 20, height: 56, flags: ["+FLOORCLIP"],
     see_sound: "grunt/sight", attack_sound: "grunt/attack",
@@ -31,7 +31,7 @@ def test_variant
     drop_items: [ResolvedDropItem.new("Clip", 255), ResolvedDropItem.new("ClipBox", 140)],
     translation: "176:191=112:127",
     template: template,
-    flags: [] of String
+    flags: flags
   )
 end
 
@@ -95,5 +95,27 @@ describe DecorateWriter do
     output = DecorateWriter.render([v1, v2])
     output.should contain "ACTOR ZombieMan_1 : ZombieMan"
     output.should contain "ACTOR ZombieMan_2 : ZombieMan"
+  end
+
+  it "renders flags after PainChance when present" do
+    output = DecorateWriter.render([test_variant(["+SHADOW", "+LOOKALLAROUND"])])
+    output.should contain "  +SHADOW\n"
+    output.should contain "  +LOOKALLAROUND\n"
+    # flags should appear after PainChance
+    pain_pos = output.index("PainChance").not_nil!
+    shadow_pos = output.index("+SHADOW").not_nil!
+    shadow_pos.should be > pain_pos
+  end
+
+  it "renders nothing extra when flags list is empty" do
+    output = DecorateWriter.render([test_variant([] of String)])
+    output.should_not contain "+SHADOW"
+    output.should_not contain "+NOPAIN"
+    output.should_not contain "+BRIGHT"
+  end
+
+  it "renders a minus flag correctly" do
+    output = DecorateWriter.render([test_variant(["-FLOORCLIP"])])
+    output.should contain "  -FLOORCLIP\n"
   end
 end
