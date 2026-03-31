@@ -27,6 +27,34 @@ module DecorateWriter
       io << "  #{flag}\n"
     end
 
+    # --- Scale and proportional collision box ---
+    io << "  Scale #{v.scale}\n"   if v.scale
+    io << "  Radius #{v.radius}\n" if v.radius
+    io << "  Height #{v.height}\n" if v.height
+
+    # --- Behavioral properties ---
+    io << "  Mass #{v.mass}\n"                       if v.mass
+    io << "  Gravity #{v.gravity}\n"                 if v.gravity
+    io << "  ReactionTime #{v.reaction_time}\n"      if v.reaction_time
+    io << "  PainThreshold #{v.pain_threshold}\n"    if v.pain_threshold
+    io << "  Threshold #{v.threshold}\n"             if v.threshold
+    io << "  MinMissileChance #{v.min_missile_chance}\n" if v.min_missile_chance
+    io << "  MaxTargetRange #{v.max_target_range}\n" if v.max_target_range
+    io << "  MeleeRange #{v.melee_range}\n"          if v.melee_range
+    io << "  DamageMultiply #{v.damage_multiply}\n"  if v.damage_multiply
+
+    # --- Render style (Normal writes nothing; Stencil also writes StencilColor) ---
+    if rs = v.render_style
+      io << "  RenderStyle #{rs}\n"
+      io << "  Alpha #{v.alpha}\n" if v.alpha
+      if sc = v.stencil_color
+        io << "  StencilColor \"#{sc}\"\n"
+      end
+    end
+
+    # --- Blood color ---
+    io << "  BloodColor \"#{v.blood_color}\"\n" if v.blood_color
+
     # --- Translation ---
     io << "  Translation \"#{v.translation}\"\n"
 

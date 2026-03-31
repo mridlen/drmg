@@ -35,6 +35,23 @@ def test_variant(flags : Array(String) = [] of String)
   )
 end
 
+# Builds a minimal MonsterTemplate suitable for writer-focused tests
+def minimal_template
+  fixed = FixedFields.new(
+    radius: 20, height: 56, flags: [] of String,
+    see_sound: "", attack_sound: "", pain_sound: "", death_sound: "", active_sound: "",
+    sprite_prefix: "POSS"
+  )
+  MonsterTemplate.new(
+    id: "test", actor_name: "Test", base_health: 20,
+    health_range: (20..20), speed_range: (8..8), pain_chance_range: (200..200),
+    attack: AttackParams.new((1..1), (5..5), (11.25..11.25)),
+    drop_table: DropTable.new(low: [] of DropEntry, mid: [] of DropEntry, high: [] of DropEntry),
+    translations: ["176:191=112:127"], fixed_fields: fixed,
+    extra_flags: [] of FlagEntry
+  )
+end
+
 describe DecorateWriter do
   it "renders the ACTOR header with inheritance" do
     output = DecorateWriter.render([test_variant])
@@ -119,5 +136,130 @@ describe DecorateWriter do
   it "renders a minus flag correctly" do
     output = DecorateWriter.render([test_variant(["-FLOORCLIP"])])
     output.should contain "  -FLOORCLIP\n"
+  end
+
+  it "renders Mass when present" do
+    v = MonsterVariant.new(
+      name: "Test_1", health: 20, speed: 8, pain_chance: 200,
+      attack: ResolvedAttack.new(1, 5, 11.25),
+      drop_items: [] of ResolvedDropItem,
+      translation: "176:191=112:127",
+      template: minimal_template,
+      flags: [] of String,
+      mass: 150
+    )
+    output = DecorateWriter.render([v])
+    output.should contain "  Mass 150\n"
+  end
+
+  it "does not render Mass when nil" do
+    output = DecorateWriter.render([test_variant])
+    output.should_not contain "Mass"
+  end
+
+  it "renders Scale, Radius, Height in order after flags and before Translation" do
+    v = MonsterVariant.new(
+      name: "Test_1", health: 20, speed: 8, pain_chance: 200,
+      attack: ResolvedAttack.new(1, 5, 11.25),
+      drop_items: [] of ResolvedDropItem,
+      translation: "176:191=112:127",
+      template: minimal_template,
+      flags: [] of String,
+      scale: 1.5,
+      radius: 30,
+      height: 84
+    )
+    output = DecorateWriter.render([v])
+    output.should contain "  Scale 1.5\n"
+    output.should contain "  Radius 30\n"
+    output.should contain "  Height 84\n"
+    scale_pos       = output.index("Scale").not_nil!
+    radius_pos      = output.index("Radius").not_nil!
+    height_pos      = output.index("Height").not_nil!
+    translation_pos = output.index("Translation").not_nil!
+    scale_pos.should  be < radius_pos
+    radius_pos.should be < height_pos
+    height_pos.should be < translation_pos
+  end
+
+  it "renders RenderStyle and Alpha for Translucent" do
+    v = MonsterVariant.new(
+      name: "Test_1", health: 20, speed: 8, pain_chance: 200,
+      attack: ResolvedAttack.new(1, 5, 11.25),
+      drop_items: [] of ResolvedDropItem,
+      translation: "176:191=112:127",
+      template: minimal_template,
+      flags: [] of String,
+      render_style: "Translucent",
+      alpha: 0.7
+    )
+    output = DecorateWriter.render([v])
+    output.should contain "  RenderStyle Translucent\n"
+    output.should contain "  Alpha 0.7\n"
+  end
+
+  it "renders RenderStyle, Alpha, and StencilColor for Stencil" do
+    v = MonsterVariant.new(
+      name: "Test_1", health: 20, speed: 8, pain_chance: 200,
+      attack: ResolvedAttack.new(1, 5, 11.25),
+      drop_items: [] of ResolvedDropItem,
+      translation: "176:191=112:127",
+      template: minimal_template,
+      flags: [] of String,
+      render_style: "Stencil",
+      alpha: 0.8,
+      stencil_color: "FF0000"
+    )
+    output = DecorateWriter.render([v])
+    output.should contain "  RenderStyle Stencil\n"
+    output.should contain "  Alpha 0.8\n"
+    output.should contain "  StencilColor \"FF0000\"\n"
+  end
+
+  it "renders BloodColor when present" do
+    v = MonsterVariant.new(
+      name: "Test_1", health: 20, speed: 8, pain_chance: 200,
+      attack: ResolvedAttack.new(1, 5, 11.25),
+      drop_items: [] of ResolvedDropItem,
+      translation: "176:191=112:127",
+      template: minimal_template,
+      flags: [] of String,
+      blood_color: "200 20 20"
+    )
+    output = DecorateWriter.render([v])
+    output.should contain "  BloodColor \"200 20 20\"\n"
+  end
+
+  it "renders no extra properties when all new fields are nil" do
+    output = DecorateWriter.render([test_variant])
+    output.should_not contain "Mass"
+    output.should_not contain "Gravity"
+    output.should_not contain "Scale"
+    output.should_not contain "RenderStyle"
+    output.should_not contain "BloodColor"
+  end
+
+  it "renders new properties after flags and before Translation" do
+    v = MonsterVariant.new(
+      name: "Test_1", health: 20, speed: 8, pain_chance: 200,
+      attack: ResolvedAttack.new(1, 5, 11.25),
+      drop_items: [] of ResolvedDropItem,
+      translation: "176:191=112:127",
+      template: minimal_template,
+      flags: ["+SHADOW"] of String,
+      mass: 200,
+      render_style: "Fuzzy",
+      blood_color: "255 0 0"
+    )
+    output = DecorateWriter.render([v])
+    shadow_pos      = output.index("+SHADOW").not_nil!
+    mass_pos        = output.index("Mass").not_nil!
+    render_pos      = output.index("RenderStyle").not_nil!
+    blood_pos       = output.index("BloodColor").not_nil!
+    translation_pos = output.index("Translation").not_nil!
+    shadow_pos.should      be < mass_pos
+    mass_pos.should        be < render_pos
+    render_pos.should      be < blood_pos
+    blood_pos.should       be < translation_pos
   end
 end
