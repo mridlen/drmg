@@ -6,3 +6,5 @@
 *.exe
 *.pdb
 *.dll
+*.tmp.*
+*.tmp
