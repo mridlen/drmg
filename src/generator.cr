@@ -36,6 +36,7 @@ module Generator
       end
 
       # Roll speed pair (mutually exclusive: fast, slow, or neither)
+      # Probability windows: [0.0, 0.15) = fast, [0.15, 0.30) = slow, [0.30, 1.0) = neither
       speed_roll = rng.rand
       if speed_roll < SPEED_FLAGS[:fast].chance
         rolled_flags << SPEED_FLAGS[:fast].flag
