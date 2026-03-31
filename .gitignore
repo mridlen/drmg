@@ -1,4 +1,8 @@
 /docs/
+!/docs/
+!/docs/superpowers/
+!/docs/superpowers/specs/
+!/docs/superpowers/plans/
 /lib/
 /bin/
 /.shards/
