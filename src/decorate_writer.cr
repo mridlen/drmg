@@ -33,6 +33,8 @@ module DecorateWriter
     io << "  Height #{v.height}\n" if v.height
 
     # --- Behavioral properties ---
+    # Note: `if v.field` guards are falsy for 0/0.0; acceptable because
+    # generator ranges never produce zero for these properties.
     io << "  Mass #{v.mass}\n"                       if v.mass
     io << "  Gravity #{v.gravity}\n"                 if v.gravity
     io << "  ReactionTime #{v.reaction_time}\n"      if v.reaction_time
@@ -44,7 +46,7 @@ module DecorateWriter
     io << "  DamageMultiply #{v.damage_multiply}\n"  if v.damage_multiply
 
     # --- Render style (Normal writes nothing; Stencil also writes StencilColor) ---
-    if rs = v.render_style
+    if (rs = v.render_style) && rs != "Normal"
       io << "  RenderStyle #{rs}\n"
       io << "  Alpha #{v.alpha}\n" if v.alpha
       if sc = v.stencil_color

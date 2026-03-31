@@ -262,4 +262,18 @@ describe DecorateWriter do
     render_pos.should      be < blood_pos
     blood_pos.should       be < translation_pos
   end
+
+  it "does not render RenderStyle when render_style is Normal" do
+    v = MonsterVariant.new(
+      name: "Test_1", health: 20, speed: 8, pain_chance: 200,
+      attack: ResolvedAttack.new(1, 5, 11.25),
+      drop_items: [] of ResolvedDropItem,
+      translation: "176:191=112:127",
+      template: minimal_template,
+      flags: [] of String,
+      render_style: "Normal"
+    )
+    output = DecorateWriter.render([v])
+    output.should_not contain "RenderStyle"
+  end
 end
