@@ -44,7 +44,7 @@ module Generator
         rolled_flags << SPEED_FLAGS[:slow].flag
       end
 
-      # Roll per-monster extra flags
+      # Roll per-monster extra flags (appended after global flags; no deduplication)
       template.extra_flags.each do |entry|
         rolled_flags << entry.flag if rng.rand < entry.chance
       end
