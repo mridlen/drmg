@@ -298,4 +298,88 @@ describe Generator do
       v.height.should be_nil
     end
   end
+
+  it "always selects the sole render style when its weight is 1.0" do
+    fixed = FixedFields.new(
+      radius: 20, height: 56, flags: [] of String,
+      see_sound: "", attack_sound: "", pain_sound: "", death_sound: "", active_sound: "",
+      sprite_prefix: ""
+    )
+    attack = AttackParams.new((1..1), (5..5), (11.25..11.25))
+    drop_table = DropTable.new(
+      low: [] of DropEntry, mid: [] of DropEntry, high: [] of DropEntry
+    )
+    template = MonsterTemplate.new(
+      id: "test", actor_name: "Test", base_health: 20,
+      health_range: (20..20), speed_range: (8..8), pain_chance_range: (200..200),
+      attack: attack, drop_table: drop_table,
+      translations: ["176:191=112:127"], fixed_fields: fixed,
+      extra_flags: [] of FlagEntry,
+      render_styles: [RenderStyleEntry.new("Translucent", 1.0, alpha_range: (0.5..0.5))]
+    )
+    rng = Random.new(1)
+    variants = Generator.generate(template, count: 5, rng: rng)
+    variants.each do |v|
+      v.render_style.should eq "Translucent"
+      v.alpha.should eq 0.5
+    end
+  end
+
+  it "sets render_style nil when Normal is the only style" do
+    fixed = FixedFields.new(
+      radius: 20, height: 56, flags: [] of String,
+      see_sound: "", attack_sound: "", pain_sound: "", death_sound: "", active_sound: "",
+      sprite_prefix: ""
+    )
+    attack = AttackParams.new((1..1), (5..5), (11.25..11.25))
+    drop_table = DropTable.new(
+      low: [] of DropEntry, mid: [] of DropEntry, high: [] of DropEntry
+    )
+    template = MonsterTemplate.new(
+      id: "test", actor_name: "Test", base_health: 20,
+      health_range: (20..20), speed_range: (8..8), pain_chance_range: (200..200),
+      attack: attack, drop_table: drop_table,
+      translations: ["176:191=112:127"], fixed_fields: fixed,
+      extra_flags: [] of FlagEntry,
+      render_styles: [RenderStyleEntry.new("Normal", 1.0)]
+    )
+    rng = Random.new(1)
+    variants = Generator.generate(template, count: 5, rng: rng)
+    variants.each do |v|
+      v.render_style.should be_nil
+      v.alpha.should be_nil
+    end
+  end
+
+  it "leaves render_style nil when render_styles is not set" do
+    rng = Random.new(1)
+    variants = Generator.generate(test_template, count: 3, rng: rng)
+    variants.each do |v|
+      v.render_style.should be_nil
+    end
+  end
+
+  it "blood_color is deterministic with the same seed" do
+    rng1 = Random.new(555)
+    rng2 = Random.new(555)
+    v1 = Generator.generate(test_template, count: 10, rng: rng1)
+    v2 = Generator.generate(test_template, count: 10, rng: rng2)
+    v1.map(&.blood_color).should eq v2.map(&.blood_color)
+  end
+
+  it "blood_color when set is three space-separated integers 0-255" do
+    rng = Random.new(1)
+    variants = Generator.generate(test_template, count: 20, rng: rng)
+    variants.each do |v|
+      if bc = v.blood_color
+        parts = bc.split(" ")
+        parts.size.should eq 3
+        parts.each do |p|
+          val = p.to_i
+          val.should be >= 0
+          val.should be <= 255
+        end
+      end
+    end
+  end
 end

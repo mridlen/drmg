@@ -65,6 +65,41 @@ module Generator
       rolled_radius = scale.try { |s| (template.fixed_fields.radius * s).round.to_i }
       rolled_height = scale.try { |s| (template.fixed_fields.height * s).round.to_i }
 
+      # ---------- Roll render style ----------
+      # Weighted selection: sum weights, walk list until cumulative weight exceeds roll.
+      # "Normal" is a valid style but writes nothing (render_style stays nil).
+      render_style  = nil.as(String?)
+      alpha         = nil.as(Float64?)
+      stencil_color = nil.as(String?)
+
+      if styles = template.render_styles
+        total    = styles.sum(&.weight)
+        roll     = rng.rand * total
+        accum    = 0.0
+        selected = styles.last
+        styles.each do |entry|
+          accum += entry.weight
+          if roll < accum
+            selected = entry
+            break
+          end
+        end
+        unless selected.style == "Normal"
+          render_style  = selected.style
+          alpha         = selected.alpha_range.try { |r| (r.begin + rng.rand * (r.end - r.begin)).round(2) }
+          stencil_color = selected.stencil_colors.try(&.sample(rng))
+        end
+      end
+
+      # ---------- Roll blood color (50% chance of random RGB) ----------
+      blood_color = nil.as(String?)
+      if rng.rand < 0.5
+        r_val = rng.rand(256)
+        g_val = rng.rand(256)
+        b_val = rng.rand(256)
+        blood_color = "#{r_val} #{g_val} #{b_val}"
+      end
+
       # ---------- Build variant name ----------
       name = "#{template.actor_name}_#{i + 1}"
 
@@ -89,7 +124,11 @@ module Generator
         damage_multiply:    damage_multiply,
         scale:              scale,
         radius:             rolled_radius,
-        height:             rolled_height
+        height:             rolled_height,
+        render_style:       render_style,
+        alpha:              alpha,
+        stencil_color:      stencil_color,
+        blood_color:        blood_color
       )
     end
 
