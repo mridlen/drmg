@@ -1,5 +1,6 @@
 require "./spec_helper"
 require "../src/monster_template"
+require "../src/monsters/zombie_man"
 
 describe MonsterTemplate do
   it "holds all required fields" do
@@ -46,5 +47,14 @@ end
 describe TRANSLATIONS do
   it "contains at least 5 entries" do
     TRANSLATIONS.size.should be >= 5
+  end
+end
+
+describe "ZOMBIE_MAN template" do
+  it "has correct id and actor name" do
+    ZOMBIE_MAN.id.should eq "zombie_man"
+    ZOMBIE_MAN.actor_name.should eq "ZombieMan"
+    ZOMBIE_MAN.base_health.should eq 20
+    ZOMBIE_MAN.fixed_fields.sprite_prefix.should eq "POSS"
   end
 end
