@@ -30,5 +30,6 @@ HELL_KNIGHT = MonsterTemplate.new(
     death_sound: "knight/death",
     active_sound: "knight/active",
     sprite_prefix: "BOS2"
-  )
+  ),
+  extra_flags: [] of FlagEntry
 )

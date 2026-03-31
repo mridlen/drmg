@@ -51,6 +51,16 @@ struct DropTable
   end
 end
 
+# ---------- Optional flag entry ----------
+
+struct FlagEntry
+  getter flag : String
+  getter chance : Float64  # 0.0 = never, 1.0 = always
+
+  def initialize(@flag, @chance)
+  end
+end
+
 # ---------- Monster template ----------
 
 struct MonsterTemplate
@@ -64,11 +74,13 @@ struct MonsterTemplate
   getter drop_table : DropTable
   getter translations : Array(String)
   getter fixed_fields : FixedFields
+  getter extra_flags : Array(FlagEntry)
 
   def initialize(
     @id, @actor_name, @base_health,
     @health_range, @speed_range, @pain_chance_range,
-    @attack, @drop_table, @translations, @fixed_fields
+    @attack, @drop_table, @translations, @fixed_fields,
+    @extra_flags
   )
   end
 end
@@ -101,10 +113,12 @@ struct MonsterVariant
   getter drop_items : Array(ResolvedDropItem)
   getter translation : String
   getter template : MonsterTemplate
+  getter flags : Array(String)
 
   def initialize(
     @name, @health, @speed, @pain_chance,
-    @attack, @drop_items, @translation, @template
+    @attack, @drop_items, @translation, @template,
+    @flags
   )
   end
 end
@@ -123,3 +137,35 @@ TRANSLATIONS = [
   "176:191=240:247",  # red -> teal
   "176:191=64:79",    # red -> dark brown
 ]
+
+# ---------- Global optional flag pool ----------
+# Each flag is rolled independently per variant using its chance value.
+
+OPTIONAL_FLAGS = [
+  FlagEntry.new("+AMBUSH",           0.20),  # deaf until line of sight
+  FlagEntry.new("+LOOKALLAROUND",    0.25),  # no blind spots
+  FlagEntry.new("+QUICKTORETALIATE", 0.20),  # immediately turns on new attackers
+  FlagEntry.new("+FRIGHTENED",       0.15),  # runs away but still fights back
+  FlagEntry.new("+FRIGHTENING",      0.05),  # other monsters flee from this variant
+  FlagEntry.new("+AVOIDMELEE",       0.15),  # backs away from close combat
+  FlagEntry.new("+JUMPDOWN",         0.20),  # willing to jump off ledges to chase
+  FlagEntry.new("+DONTTHRUST",       0.10),  # not knocked back by explosions
+  FlagEntry.new("+DROPOFF",          0.15),  # freely walks off ledges
+  FlagEntry.new("+AVOIDHAZARDS",     0.20),  # actively avoids crushing ceilings
+  FlagEntry.new("+HARMFRIENDS",      0.10),  # projectiles hurt allied monsters
+  FlagEntry.new("+SHADOW",           0.10),  # partial invisibility
+  FlagEntry.new("+NORADIUSDMG",      0.15),  # immune to explosion splash damage
+  FlagEntry.new("+NOPAIN",           0.08),  # never flinches
+  FlagEntry.new("+NOINFIGHTING",     0.10),  # never turns on other monsters
+  FlagEntry.new("+FORCEINFIGHTING",  0.08),  # always infights regardless of map setting
+  FlagEntry.new("+BRIGHT",           0.10),  # all frames render at full brightness
+  FlagEntry.new("-FLOORCLIP",        0.08),  # hovers slightly above liquid floors
+]
+
+# ---------- Speed flag pair (mutually exclusive) ----------
+# Roll once: fast (0.0-0.15), slow (0.15-0.30), neither (0.30-1.0)
+
+SPEED_FLAGS = {
+  fast: FlagEntry.new("+ALWAYSFAST", 0.15),
+  slow: FlagEntry.new("+NEVERFAST",  0.15),
+}

@@ -30,5 +30,6 @@ IMP = MonsterTemplate.new(
     death_sound: "imp/death",
     active_sound: "imp/active",
     sprite_prefix: "TROO"
-  )
+  ),
+  extra_flags: [] of FlagEntry
 )

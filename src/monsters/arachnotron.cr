@@ -30,5 +30,6 @@ ARACHNOTRON = MonsterTemplate.new(
     death_sound: "baby/death",
     active_sound: "baby/active",
     sprite_prefix: "BSPI"
-  )
+  ),
+  extra_flags: [] of FlagEntry
 )

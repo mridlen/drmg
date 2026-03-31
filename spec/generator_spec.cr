@@ -30,7 +30,8 @@ def test_template
     attack: attack,
     drop_table: drop_table,
     translations: TRANSLATIONS,
-    fixed_fields: fixed
+    fixed_fields: fixed,
+    extra_flags: [] of FlagEntry
   )
 end
 
@@ -87,7 +88,8 @@ describe Generator do
       health_range: (10..10),
       speed_range: (8..8), pain_chance_range: (200..200),
       attack: attack, drop_table: drop_table,
-      translations: ["176:191=112:127"], fixed_fields: fixed
+      translations: ["176:191=112:127"], fixed_fields: fixed,
+      extra_flags: [] of FlagEntry
     )
     rng = Random.new(1)
     variants = Generator.generate(template, count: 1, rng: rng)
@@ -112,7 +114,8 @@ describe Generator do
       health_range: (40..40),
       speed_range: (8..8), pain_chance_range: (200..200),
       attack: attack, drop_table: drop_table,
-      translations: ["176:191=112:127"], fixed_fields: fixed
+      translations: ["176:191=112:127"], fixed_fields: fixed,
+      extra_flags: [] of FlagEntry
     )
     rng = Random.new(1)
     variants = Generator.generate(template, count: 1, rng: rng)
@@ -136,7 +139,8 @@ describe Generator do
       health_range: (70..70),
       speed_range: (8..8), pain_chance_range: (200..200),
       attack: attack, drop_table: drop_table,
-      translations: ["176:191=112:127"], fixed_fields: fixed
+      translations: ["176:191=112:127"], fixed_fields: fixed,
+      extra_flags: [] of FlagEntry
     )
     rng = Random.new(1)
     variants = Generator.generate(template, count: 1, rng: rng)

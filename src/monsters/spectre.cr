@@ -30,5 +30,6 @@ SPECTRE = MonsterTemplate.new(
     death_sound: "demon/death",
     active_sound: "demon/active",
     sprite_prefix: "SARG"
-  )
+  ),
+  extra_flags: [] of FlagEntry
 )

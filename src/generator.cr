@@ -38,7 +38,8 @@ module Generator
         attack: ResolvedAttack.new(bullet_count, damage, spread),
         drop_items: drop_items,
         translation: translation,
-        template: template
+        template: template,
+        flags: [] of String
       )
     end
 

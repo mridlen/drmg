@@ -30,5 +30,6 @@ MANCUBUS = MonsterTemplate.new(
     death_sound: "fatso/death",
     active_sound: "fatso/active",
     sprite_prefix: "FATT"
-  )
+  ),
+  extra_flags: [] of FlagEntry
 )

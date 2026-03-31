@@ -30,5 +30,6 @@ COMMANDER_KEEN = MonsterTemplate.new(
     death_sound: "keen/death",
     active_sound: "keen/active",
     sprite_prefix: "KEEN"
-  )
+  ),
+  extra_flags: [] of FlagEntry
 )

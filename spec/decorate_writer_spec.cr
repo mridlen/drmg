@@ -19,7 +19,8 @@ def test_variant
     id: "zombie_man", actor_name: "ZombieMan", base_health: 20,
     health_range: (10..500), speed_range: (4..20), pain_chance_range: (50..255),
     attack: attack_params, drop_table: drop_table,
-    translations: TRANSLATIONS, fixed_fields: fixed
+    translations: TRANSLATIONS, fixed_fields: fixed,
+    extra_flags: [] of FlagEntry
   )
   MonsterVariant.new(
     name: "ZombieMan_1",
@@ -29,7 +30,8 @@ def test_variant
     attack: ResolvedAttack.new(3, 8, 22.5),
     drop_items: [ResolvedDropItem.new("Clip", 255), ResolvedDropItem.new("ClipBox", 140)],
     translation: "176:191=112:127",
-    template: template
+    template: template,
+    flags: [] of String
   )
 end
 
@@ -79,14 +81,16 @@ describe DecorateWriter do
       id: "zombie_man", actor_name: "ZombieMan", base_health: 20,
       health_range: (10..500), speed_range: (4..20), pain_chance_range: (50..255),
       attack: attack_params, drop_table: drop_table,
-      translations: ["176:191=112:127"], fixed_fields: fixed
+      translations: ["176:191=112:127"], fixed_fields: fixed,
+      extra_flags: [] of FlagEntry
     )
     v2 = MonsterVariant.new(
       name: "ZombieMan_2", health: 100, speed: 10, pain_chance: 150,
       attack: ResolvedAttack.new(1, 5, 11.25),
       drop_items: [ResolvedDropItem.new("Clip", 255)],
       translation: "176:191=112:127",
-      template: template2
+      template: template2,
+      flags: [] of String
     )
     output = DecorateWriter.render([v1, v2])
     output.should contain "ACTOR ZombieMan_1 : ZombieMan"

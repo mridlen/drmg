@@ -30,5 +30,6 @@ CACODEMON = MonsterTemplate.new(
     death_sound: "caco/death",
     active_sound: "caco/active",
     sprite_prefix: "HEAD"
-  )
+  ),
+  extra_flags: [] of FlagEntry
 )

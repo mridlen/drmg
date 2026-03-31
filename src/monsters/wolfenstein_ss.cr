@@ -30,5 +30,6 @@ WOLFENSTEIN_SS = MonsterTemplate.new(
     death_sound: "wolfss/death",
     active_sound: "wolfss/active",
     sprite_prefix: "SSWV"
-  )
+  ),
+  extra_flags: [] of FlagEntry
 )

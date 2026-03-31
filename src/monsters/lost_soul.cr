@@ -30,5 +30,6 @@ LOST_SOUL = MonsterTemplate.new(
     death_sound: "skull/death",
     active_sound: "skull/active",
     sprite_prefix: "SKUL"
-  )
+  ),
+  extra_flags: [] of FlagEntry
 )

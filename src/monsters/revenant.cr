@@ -30,5 +30,6 @@ REVENANT = MonsterTemplate.new(
     death_sound: "skeleton/death",
     active_sound: "skeleton/active",
     sprite_prefix: "SKEL"
-  )
+  ),
+  extra_flags: [] of FlagEntry
 )

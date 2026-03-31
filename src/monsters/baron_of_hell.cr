@@ -30,5 +30,6 @@ BARON_OF_HELL = MonsterTemplate.new(
     death_sound: "baron/death",
     active_sound: "baron/active",
     sprite_prefix: "BOSS"
-  )
+  ),
+  extra_flags: [] of FlagEntry
 )

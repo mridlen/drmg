@@ -30,5 +30,6 @@ CHAIN_GUN_GUY = MonsterTemplate.new(
     death_sound: "chainguy/death",
     active_sound: "chainguy/active",
     sprite_prefix: "CPOS"
-  )
+  ),
+  extra_flags: [] of FlagEntry
 )

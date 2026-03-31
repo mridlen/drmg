@@ -30,5 +30,6 @@ CYBERDEMON = MonsterTemplate.new(
     death_sound: "cyber/death",
     active_sound: "cyber/active",
     sprite_prefix: "CYBR"
-  )
+  ),
+  extra_flags: [] of FlagEntry
 )

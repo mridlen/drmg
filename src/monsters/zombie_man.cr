@@ -30,5 +30,6 @@ ZOMBIE_MAN = MonsterTemplate.new(
     death_sound: "grunt/death",
     active_sound: "grunt/active",
     sprite_prefix: "POSS"
-  )
+  ),
+  extra_flags: [] of FlagEntry
 )

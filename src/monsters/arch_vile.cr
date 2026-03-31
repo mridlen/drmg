@@ -30,5 +30,6 @@ ARCH_VILE = MonsterTemplate.new(
     death_sound: "vile/death",
     active_sound: "vile/active",
     sprite_prefix: "VILE"
-  )
+  ),
+  extra_flags: [] of FlagEntry
 )

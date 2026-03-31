@@ -30,5 +30,6 @@ PAIN_ELEMENTAL = MonsterTemplate.new(
     death_sound: "pain/death",
     active_sound: "pain/active",
     sprite_prefix: "PAIN"
-  )
+  ),
+  extra_flags: [] of FlagEntry
 )

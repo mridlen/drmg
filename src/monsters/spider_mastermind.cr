@@ -30,5 +30,6 @@ SPIDER_MASTERMIND = MonsterTemplate.new(
     death_sound: "spider/death",
     active_sound: "spider/active",
     sprite_prefix: "SPID"
-  )
+  ),
+  extra_flags: [] of FlagEntry
 )

@@ -30,5 +30,6 @@ SHOTGUN_GUY = MonsterTemplate.new(
     death_sound: "shotguy/death",
     active_sound: "shotguy/active",
     sprite_prefix: "SPOS"
-  )
+  ),
+  extra_flags: [] of FlagEntry
 )

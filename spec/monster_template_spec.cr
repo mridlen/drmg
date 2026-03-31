@@ -35,7 +35,8 @@ describe MonsterTemplate do
       attack: attack,
       drop_table: drop_table,
       translations: TRANSLATIONS,
-      fixed_fields: fixed
+      fixed_fields: fixed,
+      extra_flags: [] of FlagEntry
     )
     template.id.should eq "zombie_man"
     template.actor_name.should eq "ZombieMan"
