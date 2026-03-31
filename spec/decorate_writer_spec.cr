@@ -101,10 +101,12 @@ describe DecorateWriter do
     output = DecorateWriter.render([test_variant(["+SHADOW", "+LOOKALLAROUND"])])
     output.should contain "  +SHADOW\n"
     output.should contain "  +LOOKALLAROUND\n"
-    # flags should appear after PainChance
+    # flags should appear after PainChance and before Translation
     pain_pos = output.index("PainChance").not_nil!
     shadow_pos = output.index("+SHADOW").not_nil!
+    translation_pos = output.index("Translation").not_nil!
     shadow_pos.should be > pain_pos
+    shadow_pos.should be < translation_pos
   end
 
   it "renders nothing extra when flags list is empty" do
