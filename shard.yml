@@ -8,6 +8,6 @@ targets:
   drmg:
     main: src/drmg.cr
 
-crystal: '>= 1.19.1'
+crystal: '~> 1.19'
 
 license: MIT
