@@ -6,7 +6,7 @@ LOST_SOUL = MonsterTemplate.new(
   id: "lost_soul",
   actor_name: "LostSoul",
   base_health: 100,
-  health_range: (50..1000),
+  health_range: (50..300),
   speed_range: (4..20),
   pain_chance_range: (10..255),
   attack: AttackParams.new(

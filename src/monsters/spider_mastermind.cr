@@ -6,7 +6,7 @@ SPIDER_MASTERMIND = MonsterTemplate.new(
   id: "spider_mastermind",
   actor_name: "SpiderMastermind",
   base_health: 3000,
-  health_range: (1500..30000),
+  health_range: (1500..9000),
   speed_range: (4..30),
   pain_chance_range: (5..80),
   attack: AttackParams.new(

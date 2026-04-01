@@ -6,7 +6,7 @@ CACODEMON = MonsterTemplate.new(
   id: "cacodemon",
   actor_name: "Cacodemon",
   base_health: 400,
-  health_range: (200..4000),
+  health_range: (200..1200),
   speed_range: (4..20),
   pain_chance_range: (50..255),
   attack: AttackParams.new(

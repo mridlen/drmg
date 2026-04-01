@@ -6,7 +6,7 @@ HELL_KNIGHT = MonsterTemplate.new(
   id: "hell_knight",
   actor_name: "HellKnight",
   base_health: 500,
-  health_range: (250..5000),
+  health_range: (250..1500),
   speed_range: (4..20),
   pain_chance_range: (5..80),
   attack: AttackParams.new(

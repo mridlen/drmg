@@ -6,7 +6,7 @@ WOLFENSTEIN_SS = MonsterTemplate.new(
   id: "wolfenstein_ss",
   actor_name: "WolfensteinSS",
   base_health: 50,
-  health_range: (25..500),
+  health_range: (25..150),
   speed_range: (4..20),
   pain_chance_range: (50..255),
   attack: AttackParams.new(

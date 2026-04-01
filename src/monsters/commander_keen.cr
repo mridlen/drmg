@@ -6,7 +6,7 @@ COMMANDER_KEEN = MonsterTemplate.new(
   id: "commander_keen",
   actor_name: "CommanderKeen",
   base_health: 100,
-  health_range: (50..1000),
+  health_range: (50..300),
   speed_range: (0..0),
   pain_chance_range: (10..255),
   attack: AttackParams.new(

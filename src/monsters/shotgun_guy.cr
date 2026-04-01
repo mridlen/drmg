@@ -6,7 +6,7 @@ SHOTGUN_GUY = MonsterTemplate.new(
   id: "shotgun_guy",
   actor_name: "ShotgunGuy",
   base_health: 30,
-  health_range: (15..300),
+  health_range: (15..90),
   speed_range: (4..20),
   pain_chance_range: (50..255),
   attack: AttackParams.new(

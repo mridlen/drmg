@@ -6,7 +6,7 @@ ARCH_VILE = MonsterTemplate.new(
   id: "arch_vile",
   actor_name: "Archvile",
   base_health: 700,
-  health_range: (350..7000),
+  health_range: (350..2100),
   speed_range: (4..30),
   pain_chance_range: (10..255),
   attack: AttackParams.new(

@@ -6,7 +6,7 @@ DEMON = MonsterTemplate.new(
   id: "demon",
   actor_name: "Demon",
   base_health: 150,
-  health_range: (75..1500),
+  health_range: (75..450),
   speed_range: (4..30),
   pain_chance_range: (50..255),
   attack: AttackParams.new(

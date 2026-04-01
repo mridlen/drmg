@@ -6,7 +6,7 @@ ZOMBIE_MAN = MonsterTemplate.new(
   id: "zombie_man",
   actor_name: "ZombieMan",
   base_health: 20,
-  health_range: (10..500),
+  health_range: (10..60),
   speed_range: (4..20),
   pain_chance_range: (50..255),
   attack: AttackParams.new(

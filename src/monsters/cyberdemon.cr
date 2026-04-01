@@ -6,7 +6,7 @@ CYBERDEMON = MonsterTemplate.new(
   id: "cyberdemon",
   actor_name: "Cyberdemon",
   base_health: 4000,
-  health_range: (2000..40000),
+  health_range: (2000..12000),
   speed_range: (4..30),
   pain_chance_range: (5..80),
   attack: AttackParams.new(

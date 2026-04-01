@@ -6,7 +6,7 @@ ARACHNOTRON = MonsterTemplate.new(
   id: "arachnotron",
   actor_name: "Arachnotron",
   base_health: 500,
-  health_range: (250..5000),
+  health_range: (250..1500),
   speed_range: (4..30),
   pain_chance_range: (50..255),
   attack: AttackParams.new(

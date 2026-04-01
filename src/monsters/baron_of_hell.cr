@@ -6,7 +6,7 @@ BARON_OF_HELL = MonsterTemplate.new(
   id: "baron_of_hell",
   actor_name: "BaronOfHell",
   base_health: 1000,
-  health_range: (500..10000),
+  health_range: (500..3000),
   speed_range: (4..20),
   pain_chance_range: (5..80),
   attack: AttackParams.new(

@@ -6,7 +6,7 @@ CHAIN_GUN_GUY = MonsterTemplate.new(
   id: "chain_gun_guy",
   actor_name: "ChaingunGuy",
   base_health: 70,
-  health_range: (35..700),
+  health_range: (35..210),
   speed_range: (4..20),
   pain_chance_range: (50..255),
   attack: AttackParams.new(

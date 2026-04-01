@@ -6,7 +6,7 @@ REVENANT = MonsterTemplate.new(
   id: "revenant",
   actor_name: "Revenant",
   base_health: 300,
-  health_range: (150..3000),
+  health_range: (150..900),
   speed_range: (4..30),
   pain_chance_range: (50..255),
   attack: AttackParams.new(

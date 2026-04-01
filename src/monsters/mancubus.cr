@@ -6,7 +6,7 @@ MANCUBUS = MonsterTemplate.new(
   id: "mancubus",
   actor_name: "Fatso",
   base_health: 600,
-  health_range: (300..6000),
+  health_range: (300..1800),
   speed_range: (4..20),
   pain_chance_range: (50..255),
   attack: AttackParams.new(
