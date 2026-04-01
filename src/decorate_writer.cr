@@ -13,6 +13,16 @@ module DecorateWriter
   end
 
   private def self.render_variant(io : IO, v : MonsterVariant)
+    # --- Projectile actor (combo attack only) ---
+    if ca = v.combo_attack
+      io << "ACTOR #{ca.projectile_name} : #{ca.projectile_class}\n"
+      io << "{\n"
+      io << "  Speed #{ca.projectile_speed}\n"
+      io << "  FastSpeed #{ca.projectile_fast_speed}\n" if ca.projectile_fast_speed
+      io << "  Damage #{ca.projectile_damage}\n"
+      io << "}\n\n"
+    end
+
     # --- ACTOR header ---
     io << "ACTOR #{v.name} : #{v.template.actor_name}\n"
     io << "{\n"
@@ -65,20 +75,33 @@ module DecorateWriter
       io << "  DropItem \"#{drop.item}\" #{drop.weight}\n"
     end
 
-    # --- Override Missile state to use A_CustomBulletAttack ---
-    # A_CustomBulletAttack signature: (spread, vspread, numbullets, damage, pufftype)
-    spread = v.attack.spread
-    bullets = v.attack.bullet_count
-    damage = v.attack.damage
+    # --- Missile state ---
     sprite = v.template.fixed_fields.sprite_prefix
 
     io << "  States\n"
     io << "  {\n"
-    io << "  Missile:\n"
-    io << "    #{sprite} E 10 A_FaceTarget\n"
-    io << "    #{sprite} F 8 A_CustomBulletAttack(#{spread}, 0.0, #{bullets}, #{damage}, \"BulletPuff\")\n"
-    io << "    #{sprite} E 8\n"
-    io << "    Goto See\n"
+
+    if ca = v.combo_attack
+      # Combo attack: melee claw + projectile fireball
+      # A_CustomComboAttack signature: (missiletype, damagemul, meleesound)
+      io << "  Melee:\n"
+      io << "  Missile:\n"
+      io << "    #{sprite} EF 8 A_FaceTarget\n"
+      io << "    #{sprite} G 6 A_CustomComboAttack(\"#{ca.projectile_name}\", #{ca.melee_damage}, \"#{ca.melee_sound}\")\n"
+      io << "    Goto See\n"
+    else
+      # Hitscan bullet attack
+      # A_CustomBulletAttack signature: (spread, vspread, numbullets, damage, pufftype)
+      spread  = v.attack.spread
+      bullets = v.attack.bullet_count
+      damage  = v.attack.damage
+      io << "  Missile:\n"
+      io << "    #{sprite} E 10 A_FaceTarget\n"
+      io << "    #{sprite} F 8 A_CustomBulletAttack(#{spread}, 0.0, #{bullets}, #{damage}, \"BulletPuff\")\n"
+      io << "    #{sprite} E 8\n"
+      io << "    Goto See\n"
+    end
+
     io << "  }\n"
     io << "}\n"
   end

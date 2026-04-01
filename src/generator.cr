@@ -76,7 +76,7 @@ module Generator
         total    = styles.sum(&.weight)
         roll     = rng.rand * total
         accum    = 0.0
-        selected = styles.last
+        selected = styles.last  # fallback: only reachable if roll == total (fp edge case)
         styles.each do |entry|
           accum += entry.weight
           if roll < accum
@@ -91,13 +91,31 @@ module Generator
         end
       end
 
-      # ---------- Roll blood color (50% chance of random RGB) ----------
+      # ---------- Roll blood color (50% chance; nil = inherit actor default) ----------
       blood_color = nil.as(String?)
       if rng.rand < 0.5
         r_val = rng.rand(256)
         g_val = rng.rand(256)
         b_val = rng.rand(256)
         blood_color = "#{r_val} #{g_val} #{b_val}"
+      end
+
+      # ---------- Roll combo attack (melee + projectile) ----------
+      combo_attack = template.combo_attack_params.try do |ca|
+        proj_speed      = rng.rand(ca.projectile_speed_range)
+        proj_fast_speed = ca.projectile_fast_speed_range.try { |r| rng.rand(r) }
+        proj_damage     = rng.rand(ca.projectile_damage_range)
+        melee_dmg       = rng.rand(ca.melee_damage_range)
+        proj_name       = "#{ca.projectile_class}_#{i + 1}"
+        ResolvedComboAttack.new(
+          projectile_name:      proj_name,
+          projectile_class:     ca.projectile_class,
+          projectile_speed:     proj_speed,
+          projectile_damage:    proj_damage,
+          melee_damage:         melee_dmg,
+          melee_sound:          ca.melee_sound,
+          projectile_fast_speed: proj_fast_speed
+        )
       end
 
       # ---------- Build variant name ----------
@@ -128,7 +146,8 @@ module Generator
         render_style:       render_style,
         alpha:              alpha,
         stencil_color:      stencil_color,
-        blood_color:        blood_color
+        blood_color:        blood_color,
+        combo_attack:       combo_attack
       )
     end
 

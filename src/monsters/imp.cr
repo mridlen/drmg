@@ -6,7 +6,7 @@ IMP = MonsterTemplate.new(
   id: "imp",
   actor_name: "DoomImp",
   base_health: 60,
-  health_range: (30..600),
+  health_range: (30..180),
   speed_range: (4..20),
   pain_chance_range: (50..255),
   attack: AttackParams.new(
@@ -31,5 +31,13 @@ IMP = MonsterTemplate.new(
     active_sound: "imp/active",
     sprite_prefix: "TROO"
   ),
-  extra_flags: [] of FlagEntry
+  extra_flags: [] of FlagEntry,
+  combo_attack_params: ComboAttackParams.new(
+    projectile_class: "DoomImpBall",
+    projectile_speed_range: (5..20),
+    projectile_damage_range: (1..8),
+    melee_damage_range: (1..6),
+    melee_sound: "imp/melee",
+    projectile_fast_speed_range: (10..40)
+  )
 )

@@ -11,6 +11,7 @@ require "./monster_registry"
 monsters_arg = "all"
 seed : Int32? = nil
 output_path = "./drmg_output.pk3"
+default_variants = 1
 
 # ---------- CLI argument parsing ----------
 
@@ -23,6 +24,10 @@ OptionParser.parse do |parser|
 
   parser.on("--seed SEED", "Integer RNG seed for reproducible output") do |val|
     seed = val.to_i
+  end
+
+  parser.on("--variants COUNT", "Number of variants per monster (default: 1)") do |val|
+    default_variants = val.to_i
   end
 
   parser.on("--output PATH", "Output PK3 file path (default: ./drmg_output.pk3)") do |val|
@@ -41,13 +46,13 @@ selections = [] of {MonsterTemplate, Int32}
 
 if monsters_arg == "all"
   ALL_MONSTERS.each_value do |template|
-    selections << {template, 1}
+    selections << {template, default_variants}
   end
 else
   monsters_arg.split(",").each do |entry|
     parts = entry.split(":")
     id = parts[0].strip
-    count = parts.size > 1 ? parts[1].to_i : 1
+    count = parts.size > 1 ? parts[1].to_i : default_variants
 
     unless ALL_MONSTERS.has_key?(id)
       STDERR.puts "Unknown monster id: '#{id}'. Valid ids: #{ALL_MONSTERS.keys.join(", ")}"

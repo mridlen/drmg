@@ -32,6 +32,23 @@ struct AttackParams
   end
 end
 
+# ---------- Combo (melee + projectile) attack parameters ----------
+
+struct ComboAttackParams
+  getter projectile_class : String                        # base class e.g. "DoomImpBall"
+  getter projectile_speed_range : Range(Int32, Int32)
+  getter projectile_fast_speed_range : Range(Int32, Int32)?  # optional FastSpeed
+  getter projectile_damage_range : Range(Int32, Int32)
+  getter melee_damage_range : Range(Int32, Int32)         # multiplier for random(1,8)
+  getter melee_sound : String
+
+  def initialize(
+    @projectile_class, @projectile_speed_range, @projectile_damage_range,
+    @melee_damage_range, @melee_sound, @projectile_fast_speed_range = nil
+  )
+  end
+end
+
 # ---------- Drop table ----------
 
 struct DropEntry
@@ -106,6 +123,9 @@ struct MonsterTemplate
   # Optional scale range (valid: 0.5..2.0); Radius/Height are derived from fixed_fields base values
   getter scale_range : Range(Float64, Float64)?
 
+  # Optional combo attack (melee + projectile); nil = use hitscan AttackParams instead
+  getter combo_attack_params : ComboAttackParams?
+
   # Optional render style pool; one entry selected per variant by weighted random
   getter render_styles : Array(RenderStyleEntry)?
 
@@ -123,6 +143,7 @@ struct MonsterTemplate
     @max_target_dist_range = nil,
     @melee_dist_range = nil,
     @damage_multiply_range = nil,
+    @combo_attack_params = nil,
     @scale_range = nil,
     @render_styles = nil
   )
@@ -137,6 +158,23 @@ struct ResolvedAttack
   getter spread : Float64
 
   def initialize(@bullet_count, @damage, @spread)
+  end
+end
+
+struct ResolvedComboAttack
+  getter projectile_name : String       # e.g. "DoomImpBall_1"
+  getter projectile_class : String      # base class e.g. "DoomImpBall" (for ACTOR inheritance)
+  getter projectile_speed : Int32
+  getter projectile_fast_speed : Int32? # optional FastSpeed
+  getter projectile_damage : Int32
+  getter melee_damage : Int32           # multiplier for random(1,8) in A_CustomComboAttack
+  getter melee_sound : String
+
+  def initialize(
+    @projectile_name, @projectile_class, @projectile_speed,
+    @projectile_damage, @melee_damage, @melee_sound,
+    @projectile_fast_speed = nil
+  )
   end
 end
 
@@ -177,10 +215,13 @@ struct MonsterVariant
   getter height : Int32?
 
   # Optional render properties
-  getter render_style : String?   # nil when Normal or not rolled
+  getter render_style : String?   # nil = omit from DECORATE output (Normal is the base default)
   getter alpha : Float64?         # Translucent or Stencil only
   getter stencil_color : String?  # Stencil only; hex e.g. "FF0000"
   getter blood_color : String?    # "RR GG BB" decimal; nil = inherit default
+
+  # Optional combo attack (melee + projectile); nil = use hitscan ResolvedAttack
+  getter combo_attack : ResolvedComboAttack?
 
   def initialize(
     @name, @health, @speed, @pain_chance,
@@ -201,7 +242,8 @@ struct MonsterVariant
     @render_style = nil,
     @alpha = nil,
     @stencil_color = nil,
-    @blood_color = nil
+    @blood_color = nil,
+    @combo_attack = nil
   )
   end
 end

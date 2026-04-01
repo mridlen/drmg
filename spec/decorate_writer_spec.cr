@@ -276,4 +276,66 @@ describe DecorateWriter do
     output = DecorateWriter.render([v])
     output.should_not contain "RenderStyle"
   end
+
+  it "renders projectile actor and A_CustomComboAttack for combo attack" do
+    ca = ResolvedComboAttack.new(
+      projectile_name: "DoomImpBall_1",
+      projectile_class: "DoomImpBall",
+      projectile_speed: 12,
+      projectile_damage: 5,
+      melee_damage: 3,
+      melee_sound: "imp/melee",
+      projectile_fast_speed: 24
+    )
+    v = MonsterVariant.new(
+      name: "DoomImp_1", health: 60, speed: 8, pain_chance: 200,
+      attack: ResolvedAttack.new(1, 5, 11.25),
+      drop_items: [] of ResolvedDropItem,
+      translation: "176:191=112:127",
+      template: minimal_template,
+      flags: [] of String,
+      combo_attack: ca
+    )
+    output = DecorateWriter.render([v])
+    # Projectile actor
+    output.should contain "ACTOR DoomImpBall_1 : DoomImpBall\n"
+    output.should contain "  Speed 12\n"
+    output.should contain "  FastSpeed 24\n"
+    output.should contain "  Damage 5\n"
+    # Monster uses A_CustomComboAttack, not A_CustomBulletAttack
+    output.should contain "A_CustomComboAttack(\"DoomImpBall_1\", 3, \"imp/melee\")"
+    output.should_not contain "A_CustomBulletAttack"
+    # Melee: label should be present
+    output.should contain "Melee:\n"
+  end
+
+  it "renders A_CustomBulletAttack when combo_attack is nil" do
+    output = DecorateWriter.render([test_variant])
+    output.should contain "A_CustomBulletAttack"
+    output.should_not contain "A_CustomComboAttack"
+    output.should_not contain "Melee:"
+  end
+
+  it "omits FastSpeed from projectile actor when not set" do
+    ca = ResolvedComboAttack.new(
+      projectile_name: "DoomImpBall_1",
+      projectile_class: "DoomImpBall",
+      projectile_speed: 10,
+      projectile_damage: 3,
+      melee_damage: 2,
+      melee_sound: "imp/melee"
+    )
+    v = MonsterVariant.new(
+      name: "DoomImp_1", health: 60, speed: 8, pain_chance: 200,
+      attack: ResolvedAttack.new(1, 5, 11.25),
+      drop_items: [] of ResolvedDropItem,
+      translation: "176:191=112:127",
+      template: minimal_template,
+      flags: [] of String,
+      combo_attack: ca
+    )
+    output = DecorateWriter.render([v])
+    output.should_not contain "FastSpeed"
+    output.should contain "  Speed 10\n"
+  end
 end

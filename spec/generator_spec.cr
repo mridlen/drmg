@@ -382,4 +382,55 @@ describe Generator do
       end
     end
   end
+
+  it "rolls combo_attack when combo_attack_params is set" do
+    fixed = FixedFields.new(
+      radius: 20, height: 56, flags: [] of String,
+      see_sound: "", attack_sound: "", pain_sound: "", death_sound: "", active_sound: "",
+      sprite_prefix: "TROO"
+    )
+    attack = AttackParams.new((1..1), (5..5), (11.25..11.25))
+    drop_table = DropTable.new(
+      low: [] of DropEntry, mid: [] of DropEntry, high: [] of DropEntry
+    )
+    template = MonsterTemplate.new(
+      id: "test", actor_name: "TestImp", base_health: 60,
+      health_range: (60..60), speed_range: (8..8), pain_chance_range: (200..200),
+      attack: attack, drop_table: drop_table,
+      translations: ["176:191=112:127"], fixed_fields: fixed,
+      extra_flags: [] of FlagEntry,
+      combo_attack_params: ComboAttackParams.new(
+        projectile_class: "DoomImpBall",
+        projectile_speed_range: (5..20),
+        projectile_damage_range: (1..8),
+        melee_damage_range: (1..6),
+        melee_sound: "imp/melee",
+        projectile_fast_speed_range: (10..40)
+      )
+    )
+    rng = Random.new(1)
+    variants = Generator.generate(template, count: 5, rng: rng)
+    variants.each_with_index do |v, idx|
+      ca = v.combo_attack.not_nil!
+      ca.projectile_name.should eq "DoomImpBall_#{idx + 1}"
+      ca.projectile_class.should eq "DoomImpBall"
+      ca.projectile_speed.should be >= 5
+      ca.projectile_speed.should be <= 20
+      ca.projectile_fast_speed.not_nil!.should be >= 10
+      ca.projectile_fast_speed.not_nil!.should be <= 40
+      ca.projectile_damage.should be >= 1
+      ca.projectile_damage.should be <= 8
+      ca.melee_damage.should be >= 1
+      ca.melee_damage.should be <= 6
+      ca.melee_sound.should eq "imp/melee"
+    end
+  end
+
+  it "leaves combo_attack nil when combo_attack_params is not set" do
+    rng = Random.new(1)
+    variants = Generator.generate(test_template, count: 3, rng: rng)
+    variants.each do |v|
+      v.combo_attack.should be_nil
+    end
+  end
 end
