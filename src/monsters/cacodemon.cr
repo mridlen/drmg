@@ -31,5 +31,18 @@ CACODEMON = MonsterTemplate.new(
     active_sound: "caco/active",
     sprite_prefix: "HEAD"
   ),
-  extra_flags: [] of FlagEntry
+  extra_flags: [] of FlagEntry,
+  combo_attack_params: ComboAttackParams.new(
+    projectile_class: "CacodemonBall",
+    projectile_speed_range: (5..20),
+    projectile_damage_range: (2..10),
+    melee_damage_range: (10..60),        # vanilla: 10 * random(1,6) = 10-60
+    melee_sound: "caco/melee",
+    projectile_fast_speed_range: (10..40)
+  ),
+  multi_prong_params: MultiProngParams.new(
+    three_prong_chance: 0.15,
+    five_prong_chance: 0.05,
+    angle_range: (10.0..25.0)
+  )
 )

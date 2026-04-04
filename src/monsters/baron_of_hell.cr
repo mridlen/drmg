@@ -31,5 +31,19 @@ BARON_OF_HELL = MonsterTemplate.new(
     active_sound: "baron/active",
     sprite_prefix: "BOSS"
   ),
-  extra_flags: [] of FlagEntry
+  extra_flags: [] of FlagEntry,
+  combo_attack_params: ComboAttackParams.new(
+    projectile_class: "BaronBall",
+    projectile_prefix: "BOH",
+    projectile_speed_range: (8..25),
+    projectile_damage_range: (4..16),
+    melee_damage_range: (8..20),       # vanilla: 10 * random(1,8)
+    melee_sound: "baron/melee",
+    projectile_fast_speed_range: (16..50)
+  ),
+  multi_prong_params: MultiProngParams.new(
+    three_prong_chance: 0.15,
+    five_prong_chance: 0.05,
+    angle_range: (10.0..25.0)
+  )
 )

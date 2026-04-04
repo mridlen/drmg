@@ -10,7 +10,7 @@ CHAIN_GUN_GUY = MonsterTemplate.new(
   speed_range: (4..20),
   pain_chance_range: (50..255),
   attack: AttackParams.new(
-    bullet_count_range: (1..5),
+    bullet_count_range: (1..1),   # 1 bullet per shot; burst comes from refire loop
     damage_range: (3..15),
     spread_range: (5.6..45.0)
   ),
@@ -31,5 +31,9 @@ CHAIN_GUN_GUY = MonsterTemplate.new(
     active_sound: "chainguy/active",
     sprite_prefix: "CPOS"
   ),
-  extra_flags: [] of FlagEntry
+  extra_flags: [] of FlagEntry,
+  burst_attack_params: BurstAttackParams.new(
+    attack_tics_range: (2..10),          # frame duration per shot; lower = faster firing
+    attack_sound: "chainguy/attack"
+  )
 )

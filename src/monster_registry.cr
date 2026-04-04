@@ -20,7 +20,6 @@ require "./monsters/arch_vile"
 require "./monsters/spider_mastermind"
 require "./monsters/cyberdemon"
 require "./monsters/wolfenstein_ss"
-require "./monsters/commander_keen"
 
 ALL_MONSTERS = {
   "zombie_man"        => ZOMBIE_MAN,
@@ -41,5 +40,4 @@ ALL_MONSTERS = {
   "spider_mastermind" => SPIDER_MASTERMIND,
   "cyberdemon"        => CYBERDEMON,
   "wolfenstein_ss"    => WOLFENSTEIN_SS,
-  "commander_keen"    => COMMANDER_KEEN,
 }

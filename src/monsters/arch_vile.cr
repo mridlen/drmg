@@ -31,5 +31,11 @@ ARCH_VILE = MonsterTemplate.new(
     active_sound: "vile/active",
     sprite_prefix: "VILE"
   ),
-  extra_flags: [] of FlagEntry
+  extra_flags: [] of FlagEntry,
+  vile_attack_params: VileAttackParams.new(
+    initial_damage_range: (10..20),      # vanilla: 20; capped at vanilla
+    blast_damage_range: (30..70),        # vanilla: 70; capped at vanilla
+    blast_radius_range: (50..150),       # vanilla: 70; higher = more infighting
+    thrust_factor_range: (0.5..2.0)      # vanilla: 1.0; how high target is launched
+  )
 )

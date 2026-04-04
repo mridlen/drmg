@@ -31,5 +31,23 @@ ARACHNOTRON = MonsterTemplate.new(
     active_sound: "baby/active",
     sprite_prefix: "BSPI"
   ),
-  extra_flags: [] of FlagEntry
+  extra_flags: [] of FlagEntry,
+  projectile_burst_attack_params: ProjectileBurstAttackParams.new(
+    projectile_class: "ArachnotronPlasma",
+    projectile_speed_range: (12..40),
+    projectile_damage_range: (2..10),
+    attack_tics_range: (2..6),             # vanilla: 4
+    cooldown_tics_range: (2..6),           # vanilla: 4
+    face_frame: "A",
+    face_tics: 20,
+    attack_frame: "G",
+    cooldown_frame: "H",
+    refire_frame: "H",
+    refire_function: "A_SpidRefire"
+  ),
+  multi_prong_params: MultiProngParams.new(
+    three_prong_chance: 0.20,            # 20% chance of 3-way spread
+    five_prong_chance: 0.10,             # 10% chance of 5-way spread
+    angle_range: (8.0..20.0)             # degrees between each prong
+  )
 )

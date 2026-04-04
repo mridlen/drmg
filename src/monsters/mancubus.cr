@@ -31,5 +31,10 @@ MANCUBUS = MonsterTemplate.new(
     active_sound: "fatso/active",
     sprite_prefix: "FATT"
   ),
-  extra_flags: [] of FlagEntry
+  extra_flags: [] of FlagEntry,
+  fat_attack_params: FatAttackParams.new(
+    projectile_class: "FatShot",
+    projectile_speed_range: (10..30),
+    projectile_damage_range: (3..16)
+  )
 )

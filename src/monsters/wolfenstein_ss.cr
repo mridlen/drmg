@@ -10,7 +10,7 @@ WOLFENSTEIN_SS = MonsterTemplate.new(
   speed_range: (4..20),
   pain_chance_range: (50..255),
   attack: AttackParams.new(
-    bullet_count_range: (1..5),
+    bullet_count_range: (1..1),   # 1 bullet per shot; burst comes from refire loop
     damage_range: (3..15),
     spread_range: (5.6..45.0)
   ),
@@ -31,5 +31,15 @@ WOLFENSTEIN_SS = MonsterTemplate.new(
     active_sound: "wolfss/active",
     sprite_prefix: "SSWV"
   ),
-  extra_flags: [] of FlagEntry
+  extra_flags: [] of FlagEntry,
+  burst_attack_params: BurstAttackParams.new(
+    attack_tics_range: (2..10),          # vanilla: 4; frame duration per shot
+    attack_sound: "wolfss/attack",
+    face_frame: "E",
+    face_tics: 10,
+    attack_frame_1: "G",
+    attack_frame_2: "F",
+    refire_frame: "F",
+    refire_function: "A_CPosRefire"
+  )
 )

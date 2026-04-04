@@ -31,5 +31,10 @@ LOST_SOUL = MonsterTemplate.new(
     active_sound: "skull/active",
     sprite_prefix: "SKUL"
   ),
-  extra_flags: [] of FlagEntry
+  extra_flags: [] of FlagEntry,
+  skull_attack_params: SkullAttackParams.new(
+    charge_speed_range: (10..40),        # vanilla: 20; higher = faster charge
+    damage_range: (1..6),                # vanilla: 3; actor Damage → 3*random(1,8)
+    face_tics_range: (4..14)             # vanilla: 10; windup before charge
+  )
 )

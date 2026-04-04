@@ -31,5 +31,16 @@ REVENANT = MonsterTemplate.new(
     active_sound: "skeleton/active",
     sprite_prefix: "SKEL"
   ),
-  extra_flags: [] of FlagEntry
+  extra_flags: [] of FlagEntry,
+  revenant_attack_params: RevenantAttackParams.new(
+    tracer_speed_range: (5..20),         # vanilla: 10; faster = harder to dodge
+    tracer_damage_range: (5..20),        # vanilla: 10
+    melee_damage_range: (6..60),         # vanilla: random(1,10)*6 = 6-60
+    melee_sound: "skeleton/melee"
+  ),
+  multi_prong_params: MultiProngParams.new(
+    three_prong_chance: 0.15,            # 15% chance of 3-way homing spread
+    five_prong_chance: 0.05,             # 5% chance of 5-way homing spread
+    angle_range: (10.0..25.0)            # degrees between each prong
+  )
 )

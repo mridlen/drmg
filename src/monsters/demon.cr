@@ -31,5 +31,9 @@ DEMON = MonsterTemplate.new(
     active_sound: "demon/active",
     sprite_prefix: "SARG"
   ),
-  extra_flags: [] of FlagEntry
+  extra_flags: [] of FlagEntry,
+  melee_attack_params: MeleeAttackParams.new(
+    damage_range: (4..40),     # vanilla: 4 * random(1,10) = 4-40
+    melee_sound: "demon/melee"
+  )
 )

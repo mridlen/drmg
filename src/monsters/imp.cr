@@ -39,5 +39,10 @@ IMP = MonsterTemplate.new(
     melee_damage_range: (1..6),
     melee_sound: "imp/melee",
     projectile_fast_speed_range: (10..40)
+  ),
+  multi_prong_params: MultiProngParams.new(
+    three_prong_chance: 0.15,
+    five_prong_chance: 0.05,
+    angle_range: (10.0..25.0)
   )
 )

@@ -31,5 +31,9 @@ CYBERDEMON = MonsterTemplate.new(
     active_sound: "cyber/active",
     sprite_prefix: "CYBR"
   ),
-  extra_flags: [] of FlagEntry
+  extra_flags: [] of FlagEntry,
+  cyber_attack_params: CyberAttackParams.new(
+    fire_tics_range: (4..16),            # vanilla: 12; lower = faster volleys
+    face_tics_range: (4..16)             # vanilla: 12; lower = quicker re-aim
+  )
 )

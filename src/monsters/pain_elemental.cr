@@ -31,5 +31,13 @@ PAIN_ELEMENTAL = MonsterTemplate.new(
     active_sound: "pain/active",
     sprite_prefix: "PAIN"
   ),
-  extra_flags: [] of FlagEntry
+  extra_flags: [] of FlagEntry,
+  pain_attack_params: PainAttackParams.new(
+    skull_health_range: (50..300),        # matches Lost Soul health range
+    skull_speed_range: (4..20),           # matches Lost Soul speed range
+    skull_charge_speed_range: (10..40),   # A_SkullAttack speed; vanilla: 20
+    skull_damage_range: (1..6),           # actor Damage; vanilla: 3 → 3*random(1,8)
+    skull_face_tics_range: (4..14),       # windup tics; vanilla: 10
+    dual_chance: 0.25                     # 25% chance of A_DualPainAttack (two skulls at ±45°)
+  )
 )

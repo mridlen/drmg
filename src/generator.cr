@@ -100,13 +100,35 @@ module Generator
         blood_color = "#{r_val} #{g_val} #{b_val}"
       end
 
+      # ---------- Roll multi-prong spread ----------
+      multi_prong = template.multi_prong_params.try do |mp|
+        angle_min = mp.angle_range.begin
+        angle_max = mp.angle_range.end
+        spread    = (angle_min + rng.rand * (angle_max - angle_min)).round(1)
+        roll      = rng.rand
+        count     = if roll < mp.three_prong_chance
+                      3
+                    elsif roll < mp.three_prong_chance + mp.five_prong_chance
+                      5
+                    else
+                      1
+                    end
+        # Only store if actually multi-prong
+        count > 1 ? ResolvedMultiProng.new(prong_count: count, spread_angle: spread) : nil
+      end
+
       # ---------- Roll combo attack (melee + projectile) ----------
       combo_attack = template.combo_attack_params.try do |ca|
         proj_speed      = rng.rand(ca.projectile_speed_range)
         proj_fast_speed = ca.projectile_fast_speed_range.try { |r| rng.rand(r) }
         proj_damage     = rng.rand(ca.projectile_damage_range)
         melee_dmg       = rng.rand(ca.melee_damage_range)
-        proj_name       = "#{ca.projectile_class}_#{i + 1}"
+        # e.g. "BaronBall_HK_1" with prefix, "DoomImpBall_1" without
+        proj_name = if prefix = ca.projectile_prefix
+          "#{ca.projectile_class}_#{prefix}_#{i + 1}"
+        else
+          "#{ca.projectile_class}_#{i + 1}"
+        end
         ResolvedComboAttack.new(
           projectile_name:      proj_name,
           projectile_class:     ca.projectile_class,
@@ -115,6 +137,140 @@ module Generator
           melee_damage:         melee_dmg,
           melee_sound:          ca.melee_sound,
           projectile_fast_speed: proj_fast_speed
+        )
+      end
+
+      # ---------- Roll melee-only attack ----------
+      melee_attack = template.melee_attack_params.try do |ma|
+        dmg = rng.rand(ma.damage_range)
+        ResolvedMeleeAttack.new(
+          damage:      dmg,
+          melee_sound: ma.melee_sound,
+          miss_sound:  ma.miss_sound
+        )
+      end
+
+      # ---------- Roll burst (refire loop) hitscan attack ----------
+      burst_attack = template.burst_attack_params.try do |ba|
+        tics = rng.rand(ba.attack_tics_range)
+        ResolvedBurstAttack.new(
+          attack_tics:      tics,
+          attack_sound:     ba.attack_sound,
+          face_frame:       ba.face_frame,
+          face_tics:        ba.face_tics,
+          attack_frame_1:   ba.attack_frame_1,
+          attack_frame_2:   ba.attack_frame_2,
+          refire_frame:     ba.refire_frame,
+          refire_function:  ba.refire_function
+        )
+      end
+
+      # ---------- Roll projectile burst (refire loop) attack ----------
+      projectile_burst_attack = template.projectile_burst_attack_params.try do |pb|
+        proj_speed    = rng.rand(pb.projectile_speed_range)
+        proj_damage   = rng.rand(pb.projectile_damage_range)
+        attack_tics   = rng.rand(pb.attack_tics_range)
+        cooldown_tics = rng.rand(pb.cooldown_tics_range)
+        proj_name     = "#{pb.projectile_class}_#{i + 1}"
+        ResolvedProjectileBurstAttack.new(
+          projectile_name:   proj_name,
+          projectile_class:  pb.projectile_class,
+          projectile_speed:  proj_speed,
+          projectile_damage: proj_damage,
+          attack_tics:       attack_tics,
+          cooldown_tics:     cooldown_tics,
+          face_frame:        pb.face_frame,
+          face_tics:         pb.face_tics,
+          attack_frame:      pb.attack_frame,
+          cooldown_frame:    pb.cooldown_frame,
+          refire_frame:      pb.refire_frame,
+          refire_function:   pb.refire_function
+        )
+      end
+
+      # ---------- Roll skull (charge) attack ----------
+      skull_attack = template.skull_attack_params.try do |sa|
+        charge_speed = rng.rand(sa.charge_speed_range)
+        dmg          = rng.rand(sa.damage_range)
+        face_tics    = rng.rand(sa.face_tics_range)
+        ResolvedSkullAttack.new(
+          charge_speed: charge_speed,
+          damage:       dmg,
+          face_tics:    face_tics
+        )
+      end
+
+      # ---------- Roll revenant (homing tracer + melee) attack ----------
+      revenant_attack = template.revenant_attack_params.try do |ra|
+        tracer_spd  = rng.rand(ra.tracer_speed_range)
+        tracer_dmg  = rng.rand(ra.tracer_damage_range)
+        melee_dmg   = rng.rand(ra.melee_damage_range)
+        tracer_name = "RevenantTracer_#{i + 1}"
+        ResolvedRevenantAttack.new(
+          tracer_name:  tracer_name,
+          tracer_speed: tracer_spd,
+          tracer_damage: tracer_dmg,
+          melee_damage: melee_dmg,
+          melee_sound:  ra.melee_sound
+        )
+      end
+
+      # ---------- Roll pain (Lost Soul spawner) attack ----------
+      pain_attack = template.pain_attack_params.try do |pa|
+        skull_hp     = rng.rand(pa.skull_health_range)
+        skull_spd    = rng.rand(pa.skull_speed_range)
+        skull_chrg   = rng.rand(pa.skull_charge_speed_range)
+        skull_dmg    = rng.rand(pa.skull_damage_range)
+        skull_face   = rng.rand(pa.skull_face_tics_range)
+        skull_name   = "LostSoul_PE_#{i + 1}"
+        is_dual      = rng.rand < pa.dual_chance
+        ResolvedPainAttack.new(
+          skull_name:         skull_name,
+          skull_health:       skull_hp,
+          skull_speed:        skull_spd,
+          skull_charge_speed: skull_chrg,
+          skull_damage:       skull_dmg,
+          skull_face_tics:    skull_face,
+          dual:               is_dual
+        )
+      end
+
+      # ---------- Roll cyber (3-rocket volley) attack ----------
+      cyber_attack = template.cyber_attack_params.try do |cy|
+        fire_tics = rng.rand(cy.fire_tics_range)
+        face_tics = rng.rand(cy.face_tics_range)
+        ResolvedCyberAttack.new(
+          fire_tics: fire_tics,
+          face_tics: face_tics
+        )
+      end
+
+      # ---------- Roll vile (archvile fire) attack ----------
+      vile_attack = template.vile_attack_params.try do |va|
+        initial_dmg = rng.rand(va.initial_damage_range)
+        blast_dmg   = rng.rand(va.blast_damage_range)
+        blast_rad   = rng.rand(va.blast_radius_range)
+        thrust_min  = va.thrust_factor_range.begin
+        thrust_max  = va.thrust_factor_range.end
+        thrust      = (thrust_min + rng.rand * (thrust_max - thrust_min)).round(2)
+        ResolvedVileAttack.new(
+          initial_damage: initial_dmg,
+          blast_damage:   blast_dmg,
+          blast_radius:   blast_rad,
+          thrust_factor:  thrust
+        )
+      end
+
+      # ---------- Roll fat (3-volley) attack ----------
+      fat_attack = template.fat_attack_params.try do |fa|
+        proj_speed  = rng.rand(fa.projectile_speed_range)
+        proj_damage = rng.rand(fa.projectile_damage_range)
+        proj_name   = "#{fa.projectile_class}_#{i + 1}"
+        ResolvedFatAttack.new(
+          projectile_name:   proj_name,
+          projectile_class:  fa.projectile_class,
+          projectile_speed:  proj_speed,
+          projectile_damage: proj_damage
         )
       end
 
@@ -147,7 +303,17 @@ module Generator
         alpha:              alpha,
         stencil_color:      stencil_color,
         blood_color:        blood_color,
-        combo_attack:       combo_attack
+        multi_prong:        multi_prong,
+        combo_attack:       combo_attack,
+        burst_attack:       burst_attack,
+        projectile_burst_attack: projectile_burst_attack,
+        fat_attack:         fat_attack,
+        skull_attack:       skull_attack,
+        revenant_attack:    revenant_attack,
+        pain_attack:        pain_attack,
+        cyber_attack:       cyber_attack,
+        vile_attack:        vile_attack,
+        melee_attack:       melee_attack
       )
     end
 

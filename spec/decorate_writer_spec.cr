@@ -338,4 +338,26 @@ describe DecorateWriter do
     output.should_not contain "FastSpeed"
     output.should contain "  Speed 10\n"
   end
+
+  it "renders A_CustomMeleeAttack for melee-only attack" do
+    ma = ResolvedMeleeAttack.new(
+      damage: 25,
+      melee_sound: "demon/melee"
+    )
+    v = MonsterVariant.new(
+      name: "Demon_1", health: 150, speed: 10, pain_chance: 180,
+      attack: ResolvedAttack.new(1, 5, 11.25),
+      drop_items: [] of ResolvedDropItem,
+      translation: "176:191=112:127",
+      template: minimal_template,
+      flags: [] of String,
+      melee_attack: ma
+    )
+    output = DecorateWriter.render([v])
+    output.should contain "A_CustomMeleeAttack(25, \"demon/melee\", \"\")"
+    output.should contain "Melee:\n"
+    output.should_not contain "Missile:"
+    output.should_not contain "A_CustomBulletAttack"
+    output.should_not contain "A_CustomComboAttack"
+  end
 end

@@ -10,7 +10,7 @@ SPIDER_MASTERMIND = MonsterTemplate.new(
   speed_range: (4..30),
   pain_chance_range: (5..80),
   attack: AttackParams.new(
-    bullet_count_range: (1..5),
+    bullet_count_range: (1..5),   # vanilla fires 3; burst loop uses rolled value
     damage_range: (3..15),
     spread_range: (5.6..45.0)
   ),
@@ -31,5 +31,15 @@ SPIDER_MASTERMIND = MonsterTemplate.new(
     active_sound: "spider/active",
     sprite_prefix: "SPID"
   ),
-  extra_flags: [] of FlagEntry
+  extra_flags: [] of FlagEntry,
+  burst_attack_params: BurstAttackParams.new(
+    attack_tics_range: (2..10),          # frame duration per shot; lower = faster firing
+    attack_sound: "spider/attack",
+    face_frame: "A",
+    face_tics: 20,
+    attack_frame_1: "G",
+    attack_frame_2: "H",
+    refire_frame: "H",
+    refire_function: "A_SpidRefire"
+  )
 )
