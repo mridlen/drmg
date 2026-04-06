@@ -10,7 +10,7 @@ SHOTGUN_GUY = MonsterTemplate.new(
   speed_range: (4..20),
   pain_chance_range: (50..255),
   attack: AttackParams.new(
-    bullet_count_range: (1..5),
+    bullet_count_range: (2..6),
     damage_range: (3..15),
     spread_range: (5.6..45.0)
   ),

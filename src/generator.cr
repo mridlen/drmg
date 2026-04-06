@@ -332,6 +332,15 @@ module Generator
         template.drop_table.low
       end
 
-    tier.map { |entry| ResolvedDropItem.new(item: entry.item, weight: entry.weight) }
+    items = tier.map { |entry| ResolvedDropItem.new(item: entry.item, weight: entry.weight) }
+
+    # --- Health pickup scaling: tougher variants drop health to compensate ---
+    if health > template.base_health * 3
+      items << ResolvedDropItem.new(item: "Medikit", weight: 192)
+    elsif health > template.base_health * 2
+      items << ResolvedDropItem.new(item: "Stimpack", weight: 128)
+    end
+
+    items
   end
 end

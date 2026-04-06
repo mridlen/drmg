@@ -3,11 +3,28 @@ require "./monster_template"
 
 module DecorateWriter
   # Renders an array of MonsterVariant instances to a DECORATE lump string.
-  def self.render(variants : Array(MonsterVariant)) : String
+  # When replaces is true, also emits spawner actors that replace the original monsters.
+  def self.render(variants : Array(MonsterVariant), replaces : Bool = false) : String
     String.build do |io|
       variants.each_with_index do |v, idx|
         io << "\n" if idx > 0
         render_variant(io, v)
+      end
+
+      # --- Spawner actors for monster replacement ---
+      if replaces
+        # Group variants by their base actor name
+        groups = {} of String => Array(MonsterVariant)
+        variants.each do |v|
+          actor = v.template.actor_name
+          groups[actor] ||= [] of MonsterVariant
+          groups[actor] << v
+        end
+
+        groups.each do |actor_name, group|
+          io << "\n"
+          render_spawner(io, actor_name, group)
+        end
       end
     end
   end
@@ -132,7 +149,7 @@ module DecorateWriter
       io << "    Goto See\n"
     elsif ca = v.combo_attack
       # Combo attack: melee claw + projectile fireball
-      # A_CustomComboAttack signature: (missiletype, damagemul, meleesound)
+      # A_CustomComboAttack signature: (missiletype, spawnheight, meleedamage, meleesound)
       # Multi-prong: extra projectiles via A_CustomMissile at spread angles
       io << "  Melee:\n"
       io << "  Missile:\n"
@@ -143,13 +160,13 @@ module DecorateWriter
         (-half..half).to_a.each do |n|
           angle = (n * mp.spread_angle).round(1)
           if n == 0
-            io << "    #{sprite} G 6 A_CustomComboAttack(\"#{ca.projectile_name}\", #{ca.melee_damage}, \"#{ca.melee_sound}\")\n"
+            io << "    #{sprite} G 6 A_CustomComboAttack(\"#{ca.projectile_name}\", 32, #{ca.melee_damage}, \"#{ca.melee_sound}\")\n"
           else
             io << "    #{sprite} G 0 A_CustomMissile(\"#{ca.projectile_name}\", 32, 0, #{angle})\n"
           end
         end
       else
-        io << "    #{sprite} G 6 A_CustomComboAttack(\"#{ca.projectile_name}\", #{ca.melee_damage}, \"#{ca.melee_sound}\")\n"
+        io << "    #{sprite} G 6 A_CustomComboAttack(\"#{ca.projectile_name}\", 32, #{ca.melee_damage}, \"#{ca.melee_sound}\")\n"
       end
       io << "    Goto See\n"
     elsif ra = v.revenant_attack
@@ -276,5 +293,42 @@ module DecorateWriter
     else
       io << "    #{sprite} #{frame} #{tics}#{br} A_CustomMissile(\"#{projectile}\")\n"
     end
+  end
+
+  # --- Spawner actor: replaces the original monster with a random variant ---
+  # Uses chained A_Jump calls with equal probability distribution.
+  # For N variants: jump chance at step K = 256 / (N - K)
+  private def self.render_spawner(io : IO, actor_name : String, variants : Array(MonsterVariant))
+    io << "ACTOR #{actor_name}Spawner : #{actor_name} replaces #{actor_name}\n"
+    io << "{\n"
+    io << "  States\n"
+    io << "  {\n"
+    io << "  Spawn:\n"
+    io << "    TNT1 A 0 NoDelay\n"
+
+    n = variants.size
+    variants.each_with_index do |v, idx|
+      remaining = n - idx
+      if remaining > 1
+        # Equal probability: 256 / remaining gives 1/remaining chance of jumping
+        chance = (256 / remaining).to_i
+        io << "    TNT1 A 0 A_Jump(#{chance}, \"Spawn#{idx + 1}\")\n"
+      else
+        # Last variant: always jump
+        io << "    TNT1 A 0 A_Jump(256, \"Spawn#{idx + 1}\")\n"
+      end
+    end
+
+    io << "    stop\n"
+
+    # --- Labeled spawn states for each variant ---
+    variants.each_with_index do |v, idx|
+      io << "  Spawn#{idx + 1}:\n"
+      io << "    TNT1 A 1 A_SpawnItemEx(\"#{v.name}\", 0, 0, 0, 0, 0, 0, 0, SXF_NOCHECKPOSITION|SXF_TRANSFERAMBUSHFLAG)\n"
+      io << "    stop\n"
+    end
+
+    io << "  }\n"
+    io << "}\n"
   end
 end

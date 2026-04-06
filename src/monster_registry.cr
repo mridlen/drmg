@@ -21,6 +21,18 @@ require "./monsters/spider_mastermind"
 require "./monsters/cyberdemon"
 require "./monsters/wolfenstein_ss"
 
+# Monsters exclusive to Doom 2 (not in Ultimate Doom)
+DOOM2_ONLY = Set{
+  "chain_gun_guy",
+  "hell_knight",
+  "arachnotron",
+  "mancubus",
+  "revenant",
+  "arch_vile",
+  "pain_elemental",
+  "wolfenstein_ss",
+}
+
 ALL_MONSTERS = {
   "zombie_man"        => ZOMBIE_MAN,
   "shotgun_guy"       => SHOTGUN_GUY,

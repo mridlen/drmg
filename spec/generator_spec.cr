@@ -144,8 +144,9 @@ describe Generator do
     )
     rng = Random.new(1)
     variants = Generator.generate(template, count: 1, rng: rng)
-    variants[0].drop_items.size.should eq 2
+    variants[0].drop_items.size.should eq 3   # 2 high-tier + Medikit health drop
     variants[0].drop_items[1].weight.should eq 255
+    variants[0].drop_items[2].item.should eq "Medikit"
   end
 
   it "produces identical output with the same seed" do
