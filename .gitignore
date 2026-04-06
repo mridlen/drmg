@@ -9,6 +9,7 @@ drmg_output.pk3
 /.shards/
 *.dwarf
 *.exe
+!drmg.exe
 *.pdb
 *.dll
 *.tmp.*
